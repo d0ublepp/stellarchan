@@ -12,3 +12,7 @@
 //     assert(awesomeFunction() === expectedVal, 'Named awesome :(');
 //   });
 // });
+var expect = require("chai").expect;
+var StellarChan = require("../src/index");
+
+describe("Color Code Converter", function() {}
