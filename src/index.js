@@ -46,11 +46,11 @@ class StellarChan {
       throw (err);
     }
   }
-
-  async createAssetPayment(sourceKeypair, destination, asset, assetAmount) {
+//add timebound
+  async createAssetPayment(sourceKeypair, destination, asset, assetAmount, timeboundsMin, timeboundsMax) {
     try {
       let sourceAccount = await this.getAccount(sourceKeypair);
-      let tx = new StellarSDK.TransactionBuilder(sourceAccount)
+      let tx = new StellarSDK.TransactionBuilder(sourceAccount,{opts.timebounds.minTime:timeboundsMin,opts.timebounds.maxTime:timeboundsMax})
         .addOperation(StellarSDK.Operation.payment({
           destination,
           asset,
@@ -64,7 +64,7 @@ class StellarChan {
     }
   }
 
-  async createChannel(sourceKeypair, destinationPublic, startingBalance, escrowAmount, asset, limit) {
+  async createChannel(sourceKeypair, destinationPublic, startingBalance, escrowAmount, asset, limit, timeboundsMin, timeboundsMax) {
     try {
       // create escrow account
       const escrow = await this.createAccount(sourceKeypair, startingBalance);
@@ -104,7 +104,7 @@ class StellarChan {
         .build();
       unlockTx.sign();
       const unlockXDR = unlockTx.toEnvelope().toXDR('base64');
-  
+
       // create recovery
       let recoveryTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
         .addOperation(StellarSDK.Operation.setOptions({
@@ -120,7 +120,7 @@ class StellarChan {
       const recoveryXDR = recoveryTx.toEnvelope().toXDR('base64');
 
       // Payment asset to escrow
-      const paymentResult = await this.createAssetPayment(sourceKeypair, destinationPublic, asset, escrowAmount);
+      const paymentResult = await this.createAssetPayment(sourceKeypair, destinationPublic, asset, escrowAmount, timeboundsMin, timeboundsMax);
 
       return {
         escrowKeypair: escrow.keypair,
