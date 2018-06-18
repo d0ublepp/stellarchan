@@ -1,4 +1,4 @@
-import * as StellarSDK from 'stellar-sdk'
+import * as StellarSDK from 'stellar-sdk';
 
 class StellarChan {
   constructor(server) {
@@ -46,17 +46,19 @@ class StellarChan {
       throw (err);
     }
   }
-//add timebound
   async createAssetPayment(sourceKeypair, destination, asset, assetAmount, timeboundsMin, timeboundsMax) {
     try {
       let sourceAccount = await this.getAccount(sourceKeypair);
-      let tx = new StellarSDK.TransactionBuilder(sourceAccount,{opts.timebounds.minTime:timeboundsMin,opts.timebounds.maxTime:timeboundsMax})
+      let opts;
+      opts.timebounds.minTime = timeboundsMin;
+      opts.timebounds.maxTime = timeboundsMax;
+      let tx = new StellarSDK.TransactionBuilder(sourceAccount, opts)
         .addOperation(StellarSDK.Operation.payment({
           destination,
           asset,
           amount: assetAmount,
         }))
-        .build()
+        .build();
       tx.sign(sourceKeypair);
       return await this.server.submitTransaction(tx);
     } catch (err) {
