@@ -12,7 +12,26 @@
 //     assert(awesomeFunction() === expectedVal, 'Named awesome :(');
 //   });
 // });
-var expect = require("chai").expect;
-var StellarChan = require("../src/index");
+import StellarChan from '../src/index.js';
+import { Server, Keypair } from 'stellar-sdk';
+const sinon = require("sinon");
+const chai = require("chai");
+const expect = chai.expect;
+chai.should();
+//const StellarChanLib = require("../src/index.js");
 
-describe("Color Code Converter", function() {}
+describe("getAccount", function() {
+  it('error 404', function(done) {
+      let stellarChan = new StellarChan(new Server("https://horizon-live.stellar.org:1337"));
+      let keypair = Keypair.random();
+      expect(() => {throw new Error()} ).to.throw();
+      done();
+  });
+
+});
+//https://horizon-testnet.stellar.org
+//getAccount(keypair)
+//createAccount(sourceKeypair, balance)
+//trustAsset(trustKeypair, asset, limit)
+//createAssetPayment(sourceKeypair, destination, asset, assetAmount, timeboundsMin, timeboundsMax)
+//createChannel(sourceKeypair, destinationPublic, startingBalance, escrowAmount, asset, limit, timeboundsMin, timeboundsMax)

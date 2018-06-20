@@ -5,7 +5,11 @@ class StellarChan {
     this.server = server;
   }
   async getAccount(keypair) {
-    return this.server.loadAccount(keypair.publicKey());
+    try {
+      return this.server.loadAccount(keypair.publicKey());
+    } catch (err) {
+      throw (err);
+    }
   }
 
   async createAccount(sourceKeypair, balance) {
