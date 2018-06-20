@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/d0ublepp/stellarchan#readme",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-plugin-add-module-exports": "^0.2.1",
