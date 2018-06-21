@@ -24,6 +24,18 @@ const mockLoadAccountResponse = require('./load-account-response.json')
 chai.use(require('chai-as-promised'))
 chai.should();
 //const StellarChanLib = require("../src/index.js");
+
+const onlyNonFunctions = (obj) => {
+  const r = {}
+  Object.keys(obj).forEach(key => {
+    if(typeof obj[key] === 'object') {
+      r[key] = onlyNonFunctions(obj[key])
+    } else if (typeof obj[key] !== 'function') {
+      r[key] = obj[key]
+    }
+  })
+}
+
 describe("StellarChan", function() {
   beforeEach(function(done) {
     this.axiosMock = sinon.mock(axios)
@@ -37,18 +49,7 @@ describe("StellarChan", function() {
   });
 
   describe("getAccount", function() {
-    it('test sinon mock!', function(done) {
-      this.axiosMock
-        .expects('get')
-        .withArgs(sinon.match('https://horizon-live.stellar.org:1337/accounts/GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS'))
-        .returns(Promise.resolve({ data: mockLoadAccountResponse }))
-      
-      expect(axios.get('https://horizon-live.stellar.org:1337/accounts/GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS'))
-        .to.eventually.deep.equal({ data: mockLoadAccountResponse }).notify(done)
-      // done();
-    });
-
-    it('runs smoothly!', async function(done) {
+    it('returns correct account object!', async function() {
       this.axiosMock
         .expects('get')
         .atLeast(1)
@@ -60,9 +61,11 @@ describe("StellarChan", function() {
       }
 
       const expected = await new StellarSDK.Server("https://horizon-live.stellar.org:1337").loadAccount('GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS')
-      console.log(expected)
+      // console.log(expected)
       let stellarChan = new StellarChan(new StellarSDK.Server("https://horizon-live.stellar.org:1337"));
-      expect(stellarChan.getAccount(mockKeypair)).to.eventually.equal(expected).notify(done)
+      let setllarAccount = await stellarChan.getAccount(mockKeypair)
+      // expect(stellarChan.getAccount(mockKeypair).then(res => Promise.resolve(onlyNonFunctions(res))) ).to.eventually.equal(onlyNonFunctions(expected)).notify(done)
+      expect(onlyNonFunctions(setllarAccount)).to.deep.equal(onlyNonFunctions(expected))
     });
 
     // it('error 404', function(done) {
