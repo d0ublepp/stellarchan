@@ -1,4 +1,4 @@
-import * as StellarSDK from 'stellar-sdk'
+import * as StellarSDK from 'stellar-sdk';
 
 class StellarChan {
   constructor(server) {
@@ -10,9 +10,9 @@ class StellarChan {
 
   async createAccount(sourceKeypair, balance) {
     try {
-      let sourceAccount = await this.getAccount(sourceKeypair);
+      const sourceAccount = await this.getAccount(sourceKeypair);
       const newKeypair = StellarSDK.Keypair.random();
-      let tx = new StellarSDK.TransactionBuilder(sourceAccount)
+      const tx = new StellarSDK.TransactionBuilder(sourceAccount)
         .addOperation(StellarSDK.Operation.createAccount({
           destination: newKeypair.publicKey(),
           startingBalance: balance,
@@ -33,8 +33,8 @@ class StellarChan {
   async trustAsset(trustKeypair, asset, limit) {
     try {
       // Get Account
-      let trustAccount = await this.getAccount(trustKeypair);
-      let tx = new StellarSDK.TransactionBuilder(trustAccount)
+      const trustAccount = await this.getAccount(trustKeypair);
+      const tx = new StellarSDK.TransactionBuilder(trustAccount)
         .addOperation(StellarSDK.Operation.changeTrust({
           asset,
           limit: limit || null,
@@ -49,14 +49,14 @@ class StellarChan {
 
   async createAssetPayment(sourceKeypair, destination, asset, assetAmount) {
     try {
-      let sourceAccount = await this.getAccount(sourceKeypair);
-      let tx = new StellarSDK.TransactionBuilder(sourceAccount)
+      const sourceAccount = await this.getAccount(sourceKeypair);
+      const tx = new StellarSDK.TransactionBuilder(sourceAccount)
         .addOperation(StellarSDK.Operation.payment({
           destination,
           asset,
           amount: assetAmount,
         }))
-        .build()
+        .build();
       tx.sign(sourceKeypair);
       return await this.server.submitTransaction(tx);
     } catch (err) {
@@ -64,7 +64,14 @@ class StellarChan {
     }
   }
 
-  async createChannel(sourceKeypair, destinationPublic, startingBalance, escrowAmount, asset, limit) {
+  async createChannel(
+    sourceKeypair,
+    destinationPublic,
+    startingBalance,
+    escrowAmount,
+    asset,
+    limit,
+  ) {
     try {
       // create escrow account
       const escrow = await this.createAccount(sourceKeypair, startingBalance);
@@ -73,13 +80,13 @@ class StellarChan {
       // Trust asset if not native
       if (asset) {
         // Trust asset
-        const trustResult = await this.trustAsset(escrow.keypair, asset, limit);
+        await this.trustAsset(escrow.keypair, asset, limit);
       } else {
         // TODO
       }
 
       // lock
-      let multisigTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
+      const multisigTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
         .addOperation(StellarSDK.Operation.setOptions({
           signer: {
             ed25519PublicKey: destinationPublic,
@@ -91,10 +98,10 @@ class StellarChan {
         }))
         .build();
       multisigTx.sign(escrow.keypair);
-      const multisigResult = await this.server.submitTransaction(multisigTx);
+      await this.server.submitTransaction(multisigTx);
 
       // create unlock
-      let unlockTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
+      const unlockTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
         .addOperation(StellarSDK.Operation.setOptions({
           masterWeight: 0,
           lowThreshold: 1,
@@ -104,9 +111,9 @@ class StellarChan {
         .build();
       unlockTx.sign();
       const unlockXDR = unlockTx.toEnvelope().toXDR('base64');
-  
+
       // create recovery
-      let recoveryTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
+      const recoveryTx = new StellarSDK.TransactionBuilder(await this.getAccount(escrow.keypair))
         .addOperation(StellarSDK.Operation.setOptions({
           signer: {
             ed25519PublicKey: destinationPublic,
@@ -120,7 +127,12 @@ class StellarChan {
       const recoveryXDR = recoveryTx.toEnvelope().toXDR('base64');
 
       // Payment asset to escrow
-      const paymentResult = await this.createAssetPayment(sourceKeypair, destinationPublic, asset, escrowAmount);
+      const paymentResult = await this.createAssetPayment(
+        sourceKeypair,
+        destinationPublic,
+        asset,
+        escrowAmount,
+      );
 
       return {
         escrowKeypair: escrow.keypair,
