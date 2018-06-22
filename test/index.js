@@ -14,8 +14,6 @@ const stellarBaseUrl = 'https://horizon-live.stellar.org:1337';
 const testAccountAddress = 'GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS';
 let axiosMock = null;
 
-// const StellarChanLib = require("../src/index.js");
-
 const onlyNonFunctions = (obj) => {
   const r = {};
   Object.keys(obj).forEach((key) => {
