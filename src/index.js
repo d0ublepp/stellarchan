@@ -4,8 +4,13 @@ class StellarChan {
   constructor(server) {
     this.server = server;
   }
+
   async getAccount(keypair) {
-    return this.server.loadAccount(keypair.publicKey());
+    try {
+      return this.server.loadAccount(keypair.publicKey());
+    } catch (err) {
+      throw (err);
+    }
   }
 
   async createAccount(sourceKeypair, balance) {
@@ -47,10 +52,17 @@ class StellarChan {
     }
   }
 
-  async createAssetPayment(sourceKeypair, destination, asset, assetAmount) {
+  async createAssetPayment(sourceKeypair, destination, asset, assetAmount, timeboundsMin, timeboundsMax) {
     try {
+      const opts = {
+        timebounds: {
+          minTime: timeboundsMin,
+          maxTime: timeboundsMax,
+        },
+      };
+
       const sourceAccount = await this.getAccount(sourceKeypair);
-      const tx = new StellarSDK.TransactionBuilder(sourceAccount)
+      const tx = new StellarSDK.TransactionBuilder(sourceAccount, opts)
         .addOperation(StellarSDK.Operation.payment({
           destination,
           asset,

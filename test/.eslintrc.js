@@ -5,5 +5,8 @@ module.exports = {
   'extends': 'airbnb',
   'rules': {
     'max-len': ['error', { 'code': 120 }]
+  },
+  "env": {
+    "mocha": true
   }
 };
