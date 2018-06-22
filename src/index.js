@@ -4,6 +4,7 @@ class StellarChan {
   constructor(server) {
     this.server = server;
   }
+
   async getAccount(keypair) {
     try {
       return this.server.loadAccount(keypair.publicKey());

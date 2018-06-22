@@ -1,6 +1,9 @@
 module.exports = {
-  "parserOptions": {
-    "ecmaVersion": 2017
+  'parserOptions': {
+    'ecmaVersion': 2017
   },
-  "extends": "airbnb"
+  'extends': 'airbnb',
+  'rules': {
+    'max-len': ['error', { 'code': 120 }]
+  }
 };
