@@ -1,17 +1,18 @@
-import { expect, should, use } from 'chai';
 import * as StellarSDK from 'stellar-sdk';
-import * as sinon from 'sinon';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as axios from 'axios';
+import sinon from 'sinon';
+import axios from 'axios';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import StellarChan from '../src/index';
 
-use(chaiAsPromised);
-should();
+chai.use(chaiAsPromised);
+chai.should();
 
 const mockLoadAccountResponse = require('./load-account-response.json');
 
 const stellarBaseUrl = 'https://horizon-live.stellar.org:1337';
 const testAccountAddress = 'GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS';
+let axiosMock = null;
 
 // const StellarChanLib = require("../src/index.js");
 
@@ -28,19 +29,19 @@ const onlyNonFunctions = (obj) => {
 
 describe('StellarChan', () => {
   beforeEach((done) => {
-    this.axiosMock = sinon.mock(axios);
+    axiosMock = sinon.mock(axios);
     done();
   });
 
   afterEach((done) => {
-    this.axiosMock.verify();
-    this.axiosMock.restore();
+    axiosMock.verify();
+    axiosMock.restore();
     done();
   });
 
   describe('getAccount', () => {
     it('returns correct account object!', async () => {
-      this.axiosMock
+      axiosMock
         .expects('get')
         .atLeast(1)
         .withArgs(sinon.match(`${stellarBaseUrl}/accounts/${testAccountAddress}`))
@@ -59,7 +60,7 @@ describe('StellarChan', () => {
       // expect(stellarChan.getAccount(mockKeypair).then(res => Promise.resolve(onlyNonFunctions(res))) ).to.eventually.equal(onlyNonFunctions(expected)).notify(done)
       /* eslint-enable max-len */
 
-      expect(onlyNonFunctions(setllarAccount)).to.deep.equal(onlyNonFunctions(expected));
+      chai.expect(onlyNonFunctions(setllarAccount)).to.deep.equal(onlyNonFunctions(expected));
     });
 
     // it('error 404', function(done) {
