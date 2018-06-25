@@ -68,11 +68,11 @@ describe('StellarChan', () => {
     // });
   });
   describe('createAccount', () => {
-    it('returns correct account object!', async () => {
+    it('returns correct payment operation!', async () => {
       const fixedKeyPair = StellarSDK.Keypair.random();
       const randomKeyPairStub = sinon.stub(StellarSDK.Keypair, 'random')
         .returns(fixedKeyPair);
-      
+
       axiosMock
         .expects('get')
         .atLeast(1)
@@ -99,6 +99,30 @@ describe('StellarChan', () => {
     });
   });
   describe('trustAsset', () => {
+    it('returns correct changeTrust operation!', async () => {
+      axiosMock
+        .expects('get')
+        .atLeast(1)
+        .withArgs(sinon.match(`${stellarBaseUrl}/accounts/${mockKeypair.publicKey()}`))
+        .returns(Promise.resolve({
+          data: mockLoadAccountResponse,
+        }));
+
+      axiosMock
+        .expects('post')
+        .atLeast(1)
+        .withArgs(sinon.match(`${stellarBaseUrl}/transactions`, sinon.match.string))
+        .returns(Promise.resolve({
+          data: {},
+        }));
+      const asset = new StellarSDK.Asset("KC",'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
+      const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
+      const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
+      StellarSDK.Config.setDefault();
+      StellarSDK.Network.useTestNetwork();
+      const result = await stellarChan.trustAsset(mockKeypair, asset, '1');
+      console.log(stellarChanSpy.args[0][0].operations[0]);
+    });
   });
   describe('createChannel', () => {
   });
