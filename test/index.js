@@ -11,7 +11,9 @@ chai.should();
 const mockLoadAccountResponse = require('./load-account-response.json');
 
 const stellarBaseUrl = 'https://horizon-live.stellar.org:1337';
-const testAccountAddress = 'GBAH7FQMC3CZJ4WD6GE7G7YXCIU36LC2IHXQ7D5MQAUO4PODOWIVLSFS';
+// Public Key GBHJBUYVS4HABBRR7WOWROCVYEUZP5KQVWO2NH454OY2ESDEE2ZI4UAQ
+// Secret Key SB7ZCAVZZAZGPYUREEVZKK4WAZE7EVAMIM2GPTC3ALORDLFQZXPG2VKM
+const mockKeypair = StellarSDK.Keypair.fromSecret('SB7ZCAVZZAZGPYUREEVZKK4WAZE7EVAMIM2GPTC3ALORDLFQZXPG2VKM');
 let axiosMock = null;
 
 const onlyNonFunctions = (obj) => {
@@ -42,14 +44,10 @@ describe('StellarChan', () => {
       axiosMock
         .expects('get')
         .atLeast(1)
-        .withArgs(sinon.match(`${stellarBaseUrl}/accounts/${testAccountAddress}`))
+        .withArgs(sinon.match(`${stellarBaseUrl}/accounts/${mockKeypair.publicKey()}`))
         .returns(Promise.resolve({ data: mockLoadAccountResponse }));
 
-      const mockKeypair = {
-        publicKey: () => testAccountAddress,
-      };
-
-      const expected = await new StellarSDK.Server(stellarBaseUrl).loadAccount(testAccountAddress);
+      const expected = await new StellarSDK.Server(stellarBaseUrl).loadAccount(mockKeypair.publicKey());
 
       const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
       const setllarAccount = await stellarChan.getAccount(mockKeypair);
