@@ -66,7 +66,7 @@ describe('StellarChan', () => {
   describe('createAccount', () => {
     it('returns correct payment operation!', async () => {
       const fixedKeyPair = StellarSDK.Keypair.random();
-      const randomKeyPairStub = sinon.stub(StellarSDK.Keypair, 'random')
+      sinon.stub(StellarSDK.Keypair, 'random')
         .returns(fixedKeyPair);
 
       axiosMock
@@ -88,7 +88,7 @@ describe('StellarChan', () => {
       const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
       StellarSDK.Config.setDefault();
       StellarSDK.Network.useTestNetwork();
-      const result = await stellarChan.createAccount(mockKeypair, '1');
+      await stellarChan.createAccount(mockKeypair, '1');
       chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('createAccount');
       chai.expect(stellarChanSpy.args[0][0].operations[0].startingBalance).to.equal('1');
       chai.expect(stellarChanSpy.args[0][0].operations[0].destination).to.equal(fixedKeyPair.publicKey());
@@ -111,12 +111,12 @@ describe('StellarChan', () => {
         .returns(Promise.resolve({
           data: {},
         }));
-      const asset = new StellarSDK.Asset("KC", 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
+      const asset = new StellarSDK.Asset('KC', 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
       const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
       const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
       StellarSDK.Config.setDefault();
       StellarSDK.Network.useTestNetwork();
-      const result = await stellarChan.trustAsset(mockKeypair, asset, '1');
+      await stellarChan.trustAsset(mockKeypair, asset, '1');
       chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('changeTrust');
       chai.expect(stellarChanSpy.args[0][0].operations[0].line).to.deep.equal(asset);
     });
@@ -138,13 +138,13 @@ describe('StellarChan', () => {
         .returns(Promise.resolve({
           data: {},
         }));
-      const asset = new StellarSDK.Asset("KC", 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
+      const asset = new StellarSDK.Asset('KC', 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
       const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
       const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
       const destination = 'GBJ2UUQCLC66PQRPVHLA46CQFHKYCDDGIP6RY6TMDWAH2UBNL45GLKGO';
       StellarSDK.Config.setDefault();
       StellarSDK.Network.useTestNetwork();
-      const result = await stellarChan.createAssetPayment(
+      await stellarChan.createAssetPayment(
         mockKeypair,
         destination,
         asset,
@@ -152,12 +152,10 @@ describe('StellarChan', () => {
         '1529984170',
         '1529984270',
       );
-     chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('payment');
-     chai.expect(stellarChanSpy.args[0][0].operations[0].destination).to.equal(destination);
-     chai.expect(stellarChanSpy.args[0][0].operations[0].asset).to.deep.equal(asset);
-     chai.expect(stellarChanSpy.args[0][0].operations[0].amount).to.deep.equal('1');
-
-
+      chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('payment');
+      chai.expect(stellarChanSpy.args[0][0].operations[0].destination).to.equal(destination);
+      chai.expect(stellarChanSpy.args[0][0].operations[0].asset).to.deep.equal(asset);
+      chai.expect(stellarChanSpy.args[0][0].operations[0].amount).to.deep.equal('1');
     });
   });
 });
