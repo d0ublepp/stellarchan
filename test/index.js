@@ -160,11 +160,5 @@ describe('StellarChan', () => {
 
     });
   });
-
-  describe('creatChannel', () => {
-    it('Create channel success!', async () => {
-
-    });
-  });
 });
 /* eslint-disable max-len */
