@@ -54,10 +54,6 @@ describe('StellarChan', () => {
       const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
       const setllarAccount = await stellarChan.getAccount(mockKeypair);
 
-      /* eslint-disable max-len */
-      // expect(stellarChan.getAccount(mockKeypair).then(res => Promise.resolve(onlyNonFunctions(res))) ).to.eventually.equal(onlyNonFunctions(expected)).notify(done)
-      /* eslint-enable max-len */
-
       chai.expect(onlyNonFunctions(setllarAccount)).to.deep.equal(onlyNonFunctions(expected));
     });
 
@@ -115,7 +111,7 @@ describe('StellarChan', () => {
         .returns(Promise.resolve({
           data: {},
         }));
-      const asset = new StellarSDK.Asset("KC",'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
+      const asset = new StellarSDK.Asset("KC", 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
       const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
       const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
       StellarSDK.Config.setDefault();
@@ -124,7 +120,45 @@ describe('StellarChan', () => {
       console.log(stellarChanSpy.args[0][0].operations[0]);
     });
   });
-  describe('createChannel', () => {
+  describe('createAssetPayment', () => {
+    it('returns correct createAssetPayment operation!', async () => {
+      axiosMock
+        .expects('get')
+        .atLeast(1)
+        .withArgs(sinon.match(`${stellarBaseUrl}/accounts/${mockKeypair.publicKey()}`))
+        .returns(Promise.resolve({
+          data: mockLoadAccountResponse,
+        }));
+
+      axiosMock
+        .expects('post')
+        .atLeast(1)
+        .withArgs(sinon.match(`${stellarBaseUrl}/transactions`, sinon.match.string))
+        .returns(Promise.resolve({
+          data: {},
+        }));
+      const asset = new StellarSDK.Asset("KC", 'GCDNS25KCS7OGRQ2XFIENQWMSQ2RWLUNYGOEEE22KOCPOSCCCK2WNIIL');
+      const stellarChan = new StellarChan(new StellarSDK.Server(stellarBaseUrl));
+      const stellarChanSpy = sinon.spy(stellarChan.server, 'submitTransaction');
+      const destination = 'GBJ2UUQCLC66PQRPVHLA46CQFHKYCDDGIP6RY6TMDWAH2UBNL45GLKGO';
+      StellarSDK.Config.setDefault();
+      StellarSDK.Network.useTestNetwork();
+      const result = await stellarChan.createAssetPayment(
+        mockKeypair,
+        destination,
+        asset,
+        '1',
+        '1529984170',
+        '1529984270',
+      );
+      console.log(stellarChanSpy.args[0][0].operations[0]);
+    });
+  });
+
+  describe('creatChannel', () => {
+    it('Create channel success!', async () => {
+
+    });
   });
 });
 /* eslint-disable max-len */
