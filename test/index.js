@@ -117,7 +117,8 @@ describe('StellarChan', () => {
       StellarSDK.Config.setDefault();
       StellarSDK.Network.useTestNetwork();
       const result = await stellarChan.trustAsset(mockKeypair, asset, '1');
-      console.log(stellarChanSpy.args[0][0].operations[0]);
+      chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('changeTrust');
+      chai.expect(stellarChanSpy.args[0][0].operations[0].line).to.deep.equal(asset);
     });
   });
   describe('createAssetPayment', () => {
@@ -151,7 +152,12 @@ describe('StellarChan', () => {
         '1529984170',
         '1529984270',
       );
-      console.log(stellarChanSpy.args[0][0].operations[0]);
+     chai.expect(stellarChanSpy.args[0][0].operations[0].type).to.equal('payment');
+     chai.expect(stellarChanSpy.args[0][0].operations[0].destination).to.equal(destination);
+     chai.expect(stellarChanSpy.args[0][0].operations[0].asset).to.deep.equal(asset);
+     chai.expect(stellarChanSpy.args[0][0].operations[0].amount).to.deep.equal('1');
+
+
     });
   });
 
