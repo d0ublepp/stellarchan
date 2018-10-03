@@ -87,7 +87,7 @@ class StellarChan {
     try {
       // create escrow account
       const escrow = await this.createAccount(sourceKeypair, startingBalance);
-      if (!escrow.err) throw (escrow.err);
+      if (escrow.err) throw (escrow.err);
 
       // Trust asset if not native
       if (asset) {
